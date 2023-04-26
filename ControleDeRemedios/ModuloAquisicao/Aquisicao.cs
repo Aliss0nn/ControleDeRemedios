@@ -10,26 +10,38 @@ using System.Threading.Tasks;
 
 namespace ControleDeRemedios.ModuloAquisicao
 {
-    public class Aquisicao : Entidade
+    public class Aquisicao : EntidadeBase
     {
 
-        public Fornecedor fornecedor { get; set; }
-        public Remedio remedio { get; set; }
-        public Funcionario funcionario { get; set; }
-        public DateTime data { get; set; }
-        public int quantidadeMedicamento { get; set; }
+        public Remedio remedio;
+        public int quantidade;
+        public DateTime data;
+        public Funcionario funcionario;
 
-        public Aquisicao()
+        public Aquisicao(Remedio remedio, int quantidade, DateTime data, Funcionario funcionario)
         {
+            this.remedio = remedio;
+            this.quantidade = quantidade;
+            this.data = data;
+            this.funcionario = funcionario;
 
+            this.remedio.AdicionarQuantidade(quantidade);
         }
 
-        public Aquisicao(Fornecedor fornecedor, Remedio remedio, Funcionario funcionario, DateTime date, int quantidadeMedicamento)
+        public override void AtualizarInformacoes(EntidadeBase registroAtualizado)
         {
+            Aquisicao aquisicaoAtualizada = (Aquisicao)registroAtualizado;
 
+            this.data = aquisicaoAtualizada.data;
+            this.funcionario = aquisicaoAtualizada.funcionario;
+            this.remedio = aquisicaoAtualizada.remedio;
+            this.quantidade = aquisicaoAtualizada.quantidade;
         }
 
+        public void DesfazerRegistro()
+        {
 
-
+            remedio.RemoverQuantidade(quantidade);
+        }
     }
 }

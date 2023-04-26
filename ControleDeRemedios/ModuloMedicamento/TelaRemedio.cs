@@ -1,4 +1,6 @@
 ﻿using ControleDeRemedios.Compartilhado;
+using ControleDeRemedios.ModuloFornecedor;
+using ControleMedicamentos.ConsoleApp.Compartilhado;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,140 +11,90 @@ using System.Threading.Tasks;
 
 namespace ControleDeRemedios.ModuloMedicamento
 {
-    public class TelaRemedio : RepositorioRemedio
+    public class TelaRemedio : TelaBase
     {
-        Tela tela = new Tela();    
        
-        public string MenuRemedios()
+        private RepositorioFornecedor repositorioFornecedor;            
+        private TelaFornecedor telaFornecedor;
+        private RepositorioRemedio repositorioRemedio;
+
+        public TelaRemedio(RepositorioRemedio repositorioRemedio,
+           TelaFornecedor telaFornecedor, RepositorioFornecedor repositorioFornecedor)
+        {
+            this.repositorioBase = repositorioRemedio;
+            this.repositorioRemedio = repositorioRemedio;
+            this.telaFornecedor = telaFornecedor;
+            this.repositorioFornecedor = repositorioFornecedor;
+
+            nomeEntidade = "Medicamento";
+            sufixo = "s";
+        }
+
+        public override string ApresentarMenu()
         {
             Console.Clear();
-            Console.WriteLine();
 
-            Console.WriteLine("[1] - Cadastrar novo rémedio");
-            Console.WriteLine("\n[2] - Verificar quantidade de rémedios");
-            Console.WriteLine("\n[3] - Editar os Rémedios");
-            Console.WriteLine("\n[4] - Excluir os Rémedios");              
-            Console.WriteLine("\nPressione s para sair");
+            Console.WriteLine("Cadastro de Medicamentos \n");
 
-            string opcao = Console.ReadLine().ToUpper();
+            Console.WriteLine("Digite 1 para Inserir Medicamento");
+            Console.WriteLine("Digite 2 para Visualizar Medicamentos");
+            Console.WriteLine("Digite 3 para Editar Medicamentos");
+            Console.WriteLine("Digite 4 para Excluir Medicamentos");
+            Console.WriteLine("Digite 5 para Visualizar Medicamentos Mais Retirados");
+            Console.WriteLine("Digite 6 para Visualizar Medicamentos em Falta\n");
+
+            Console.WriteLine("Digite s para Sair");
+
+            string opcao = Console.ReadLine();
 
             return opcao;
         }
 
-        public void CadastroDeRemedios(string opcaoCadastro)
+
+        protected override void MostrarTabela(ArrayList registros)
         {
-            if (opcaoCadastro == "1")
-            {
-                CadastrarRemedio();
-            }
-            else if (opcaoCadastro == "2")
-            {
-                bool temremedio = MostrarRemedios(true);
+            Console.WriteLine("{0, -10} | {1, -20} | {2, -20} | {3, -20} | {4, -20}", "Id", "Nome", "Fornecedor", "Quantidade", "Qtd Retiradas");
 
-                if (temremedio)
-                {
-                    Console.ReadLine();
-                }
+            Console.WriteLine("---------------------------------------------------------------------------------------");
 
-            }
-            else if (opcaoCadastro == "3")
+            foreach (Remedio remedio in registros)
             {
-                EditarRemedio();
+                Console.WriteLine("{0, -10} | {1, -20} | {2, -20} | {3, -20} | {4, -20}",
+                    remedio.id, remedio.nome, remedio.fornecedor.nome, remedio.quantidade, remedio.quantidadeRequisicoesSaida);
             }
-            else if (opcaoCadastro == "4")
-            {
-                ExcluirRemedios();
-            }
-
-
         }
 
-        private void EditarRemedio()
+        protected override EntidadeBase ObterRegistro()
         {
-            bool temremedio = MostrarRemedios(true);
+            Fornecedor fornecedor = ObterFornecedor();
 
-            if (temremedio == false)
-                return;
-
-            Console.WriteLine();
-
-            int idSelecionado = EncontrarRemedio();
-
-            Remedio remedioAtualizado = ObterRemedio();
-
-            RepositorioRemedio repositorioRemedio = new RepositorioRemedio();
-
-            repositorioRemedio.Editar(idSelecionado, remedioAtualizado);
-
-            tela.ApresentarMensagem("Remédio editado com sucesso!", ConsoleColor.White);
-        }
-
-        private int EncontrarRemedio()
-        {
-            int idSelecionado;
-            bool idInvalido;
-
-            do
-            {
-                Console.Write("Digite o Id do Rémedio: ");
-
-                idSelecionado = Convert.ToInt32(Console.ReadLine());
-
-                RepositorioRemedio repositorioRemedio = new RepositorioRemedio();
-
-                idInvalido = repositorioRemedio.SelecionarPorId(idSelecionado) == null;
-
-                if (idInvalido)
-                    tela.ApresentarMensagem("Id inválido, tente novamente", ConsoleColor.Red);
-
-            } while (idInvalido);
-
-            return idSelecionado;
-        }
-
-        public Remedio ObterRemedio()
-        {
-            Remedio remedio = new Remedio();
-            Console.Clear();
-            Console.Write("Digite o nome do Rémedio: ");
+            Console.Write("Digite o nome: ");
             string nome = Console.ReadLine();
 
-            Console.Write("\nDescrição do rémedio: ");
+            Console.Write("Digite a descrição: ");
             string descricao = Console.ReadLine();
 
-            Console.Write("\nEscolha o id do rémedio: ");
-            int id = int.Parse(Console.ReadLine());
+            Console.Write("Digite o lote: ");
+            string lote = Console.ReadLine();
 
-            Console.WriteLine("\nDigite a quantidade do Rémedio");
-            int quantidade = int.Parse(Console.ReadLine());
+            Console.Write("Digite a data de validade: ");
+            DateTime dataValidade = DateTime.Parse(Console.ReadLine());
 
-            remedio.nome = nome;
-            remedio.descricao = descricao;
-            remedio.id = id;
-            remedio.quantidade = quantidade;
-
-
-            return remedio;
+            return new Remedio(nome, descricao, lote, dataValidade, fornecedor);
         }
 
-        public void ExcluirRemedios()
+        private Fornecedor ObterFornecedor()
         {
+            telaFornecedor.VisualizarRegistros(false);
 
-            bool temEquipamentosGravados = MostrarRemedios(true);
+            Console.Write("\nDigite o id do Forncedor: ");
+            int idFornecedor = Convert.ToInt32(Console.ReadLine());
 
-            if (temEquipamentosGravados == false)
-                return;
+            Fornecedor fornecedor = repositorioFornecedor.SelecionarPorId(idFornecedor);
 
             Console.WriteLine();
 
-            int idSelecionado = EncontrarRemedio();
-
-            RepositorioRemedio repositorioRemedio = new RepositorioRemedio();
-
-            repositorioRemedio.Excluir(idSelecionado);
-
-            tela.ApresentarMensagem("Rémedio excluído com sucesso!", ConsoleColor.Green);
-
+            return fornecedor;
         }
     }
 }

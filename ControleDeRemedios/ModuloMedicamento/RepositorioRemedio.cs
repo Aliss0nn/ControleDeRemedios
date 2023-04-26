@@ -8,156 +8,49 @@ using System.Threading.Tasks;
 
 namespace ControleDeRemedios.ModuloMedicamento
 {
-    public class RepositorioRemedio : Repositorio
+    public class RepositorioRemedio : RepositorioBase
     {     
-       Tela tela = new Tela();
-        
-        public void HistoricoRemedios()
-        {
-        }
-
-        public bool MostrarRemedios(bool v)
-        {
-            ArrayList listaRemedios = SelecionarTodos();
-
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-
-            Console.WriteLine("{0,-10} | {1,-40} | {2,-30}", "ID", "Nome", "Quantidade");
-
-            Console.WriteLine("---------------------------------------------------------------------------");
-
-            foreach (Remedio r in listaRemedios)
-            {
-                Console.WriteLine("{0,-10} | {1,-40} | {2,-30}", r.id, r.nome, r.quantidade);
-            }
-
-            Console.ResetColor();
-
-            return true;
-        }
-    
-        public void Inserir(Remedio remedio)
-        {
-            listaregistros.Add(remedio);
-
-            IncrementarId();
-
-            IncrementarQuantidade();
-        }
       
-        public void IncrementarQuantidade()
+        public RepositorioRemedio(ArrayList listaRemedios) 
         {
-            quantidadeDeid++;
+             this.listaRegistros = listaRemedios;
         }
 
-        public void CadastrarRemedio()
+        public override Remedio SelecionarPorId(int id)
         {
-            TelaRemedio telaRemedio = new TelaRemedio();
-
-            Remedio remedio = telaRemedio.ObterRemedio();
-            
-            Inserir(remedio);
-
-            tela.ApresentarMensagem("Rémedio Inserido com sucesso!!", ConsoleColor.DarkGreen);
-
+            return (Remedio)base.SelecionarPorId(id);
         }
 
-        public void HistoricoDeRequisicao(Remedio remedio)
+        public ArrayList SelecionarMedicamentosEmFalta()
         {
-            listaregistros.Add(remedio);
+            ArrayList listaMedicamentosEmFalta = new ArrayList();
 
-            foreach (Remedio item in listaregistros)
+            foreach (Remedio r in listaRegistros)
             {
-                Console.WriteLine(item);
+                if (r.quantidade == 0)
+                    listaMedicamentosEmFalta.Add(r);
             }
 
-        }
-       
-        public void EncherArrayBaixoEstoque(ArrayList arraybaixoestoque, ArrayList ListaRemedios)
-        {
-            foreach (Remedio item in ListaRemedios)
-            {
-                if (item.quantidade < 5)
-                {
-                    arraybaixoestoque.Add(item);
-                }
-            }
+            return listaMedicamentosEmFalta;
         }
 
-        public void TirarDoBaixoEstoque(ArrayList arraybaixoestoque)
-        {
-            if (arraybaixoestoque == null)
-            {
-                return;
-            }
+        //public ArrayList SelecionarMedicamentosMaisRetirados()
+        //{
+        //    Remedio[] medicamentos = new Remedio[listaRegistros.Count];
 
-            foreach (Remedio item in arraybaixoestoque)
-            {
-                if (item.quantidade >= 5)
-                {
-                    arraybaixoestoque.Remove(item);
-                }
-            }
-        }
+        //    int posicao = 0;
+        //    foreach (Remedio r in listaRegistros)
+        //    {
+        //        medicamentos[posicao++] = r;
+        //    }
 
-        public void MostrarRemediosBaixoEstoque()
-        {
+        //    Array.Sort(medicamentos, new ComparadorMedicamentosRetirados());
 
-            ArrayList arraybaixoestoque = new ArrayList();
-           
-                Console.Clear();
+        //    return new ArrayList(medicamentos);
+        //}
 
-            if (arraybaixoestoque == null)
-            {
-                tela.ApresentarMensagem("Nenhum remedio com baixo estoque", ConsoleColor.Green);
-                Console.ReadLine();
-                return;
-            }
 
-            Console.ForegroundColor = ConsoleColor.DarkBlue;
 
-            Console.WriteLine("|{0,-15} |{1,-15} |{2,-20} |{3,-20}", "Id", "Nome", "Descricao", "Quantidade em Estoque");
-
-            foreach (Remedio item in arraybaixoestoque)
-            {
-                Console.WriteLine("|{0,-15} |{1,-15} |{2,-20} |{3,-20}", item.id, item.nome, item.descricao, item.quantidade);
-            }
-
-            finalMostrar();
-        }
-
-        public Remedio remedioMaisRetirado(ArrayList arrayRemedios)
-        {
-            int a = 0;
-            Remedio remedio = null;
-
-            foreach (Remedio item in arrayRemedios)
-            {
-                if (a < item.vezesRetirados)
-                {
-                    a = item.vezesRetirados;
-                    remedio = item;
-                }
-            }
-            return remedio;
-        }
-
-        public void MostrarRemedioMaisRetirado(ArrayList remediosCadastrados)
-        {
-            Remedio remedio = remedioMaisRetirado(remediosCadastrados);
-
-            Console.WriteLine($"Remedio mais retirado:\n Nome: {remedio.nome}\n Id: {remedio.id} \n Descricao: {remedio.descricao}\n Quantidade de retiradas: {remedio.vezesRetirados}");
-            finalMostrar();
-        }
-
-        private static void finalMostrar()
-        {
-            Console.ResetColor();
-            Console.ReadLine();
-            Console.Clear();
-        }
-
-       
 
     }
 }

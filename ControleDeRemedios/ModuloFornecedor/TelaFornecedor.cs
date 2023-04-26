@@ -1,5 +1,6 @@
 ﻿using ControleDeRemedios.Compartilhado;
 using ControleDeRemedios.ModuloMedicamento;
+using ControleMedicamentos.ConsoleApp.Compartilhado;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,102 +10,45 @@ using System.Threading.Tasks;
 
 namespace ControleDeRemedios.ModuloFornecedor
 {
-    public class TelaFornecedor : RepositorioFornecedor
+    public class TelaFornecedor : TelaBase
     {
-        public string MenuFornecedor()
+        public TelaFornecedor(RepositorioFornecedor repositorioFornecedor)
         {
-            Console.Clear();
-            Console.WriteLine();
-
-            Console.WriteLine("[1] - Cadastrar novo Fornecedor");
-            Console.WriteLine("\n[2] - Visualizar os Fornecedores");
-            Console.WriteLine("\n[3] - ");
-            Console.WriteLine("\nPressione s para sair");
-
-            string opcao = Console.ReadLine().ToUpper();
-
-            return opcao;
+            repositorioBase = repositorioFornecedor;
+            nomeEntidade = "Fornecedor";
+            sufixo = "es";
         }
 
-        public void CadastroFornec(string opcaoFornecedor)
+        protected override void MostrarTabela(ArrayList registros)
         {
-            if (opcaoFornecedor == "1")
+            Console.WriteLine("{0, -10} | {1, -20} | {2, -20}", "Id", "Nome", "Telefone");
+
+            Console.WriteLine("--------------------------------------------------------------------");
+
+            foreach (Fornecedor fornecedor in registros)
             {
-                CadastrarFornecedor();
+                Console.WriteLine("{0, -10} | {1, -20} | {2, -20}", fornecedor.id, fornecedor.nome, fornecedor.telefone);
             }
-            else if (opcaoFornecedor == "2")
-            {
-                bool temremedio = VisualizarFornecedores(true);
-
-                if (temremedio)
-                {
-                    Console.ReadLine();
-                }
-
-            }
-            //else if (opcaoCadastro == "3")
-            //{
-            //    HistoricoRemedios();
-            //}
-
         }
 
-        public bool VisualizarFornecedores(bool v)
+        protected override EntidadeBase ObterRegistro()
         {
-            ArrayList listaFornecedores = SelecionarTodos();
-
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-
-            Console.WriteLine("{0,-10} | {1,-40} | {2,-30} | {3,-20}", "ID", "Nome", "CNPJ" , "Email");
-
-            Console.WriteLine("------------------------------------------------------------------------------------------------------------");
-
-            foreach (Fornecedor f in listaFornecedores)
-            {
-                Console.WriteLine("{0,-10} | {1,-40} | {2,-30} | {3,-20}", f.id, f.nome, f.cnpj, f.email);                   
-            }
-
-            Console.ResetColor();
-
-            return true;
-        }
-
-        public void CadastrarFornecedor()
-        {
-            Fornecedor fornecedor = ObterFornecedor();
-
-            Inserir(fornecedor);
-
-            IncrementarId();
-        }
-
-        public Fornecedor ObterFornecedor()
-        {
-            Fornecedor fornecedor = new Fornecedor();
-            Console.Clear();
-            Console.Write("Digite o nome do Fornecedor: ");
+            Console.Write("Digite o nome: ");
             string nome = Console.ReadLine();
 
-            Console.Write("\nDigite o CNPJ do Fornecedor: ");
-            int cnpj = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Digite o telefone: ");
+            string telefone = Console.ReadLine();
 
-            Console.Write("\nDigite o Telefone do Fornecedor: ");
-            int telefone = int.Parse(Console.ReadLine());
+            Console.Write("Digite o email: ");
+            string email = Console.ReadLine();
 
-            Console.Write("\nDigite o email do Fornecedor: ");
-            string email = Console.ReadLine(); 
-            
+            Console.Write("Digite a cidade: ");
+            string cidade = Console.ReadLine();
 
+            Console.Write("Digite o estado: ");
+            string estado = Console.ReadLine();
 
-
-            fornecedor.nome = nome;
-            fornecedor.cnpj = cnpj;
-            fornecedor.telefoneFornecedor = telefone;
-            fornecedor.email = email;
-            fornecedor.id = id;
-
-
-            return fornecedor;
+            return new Fornecedor(nome, telefone, email, cidade, estado);
         }
     }
 }

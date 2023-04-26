@@ -7,22 +7,26 @@ using System.Threading.Tasks;
 
 namespace ControleDeRemedios.ModuloFuncionario
 {
-    public class Funcionario : Entidade
+    public class Funcionario : EntidadeBase
     {
+        public string nome;
+        public string login;
+        public string senha;
 
-        public string nome = "";
-        public int cpf;
-        public int telefoneFuncionario;
+        public Funcionario(string nome, string login, string senha)
+        {
+            this.nome = nome;
+            this.login = login;
+            this.senha = senha;
+        }
 
-        
+        public override void AtualizarInformacoes(EntidadeBase registroAtualizado)
+        {
+            Funcionario funcionarioAtualizado = (Funcionario)registroAtualizado;
 
-
-
-
-
-
-
-
-
+            this.nome = funcionarioAtualizado.nome;
+            this.login = funcionarioAtualizado.login;
+            this.senha = funcionarioAtualizado.senha;
+        }
     }
 }

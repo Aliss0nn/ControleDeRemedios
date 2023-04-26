@@ -1,47 +1,81 @@
 ﻿using ControleDeRemedios.Compartilhado;
 using ControleDeRemedios.ModuloFuncionario;
 using ControleDeRemedios.ModuloMedicamento;
-using System;
+using ControleMedicamentos.ConsoleApp.Compartilhado;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ControleDeRemedios.ModuloAquisicao
 {
-    public class TelaAquisicao : Tela
+    public class TelaAquisicao : TelaBase
     {
-        TelaRemedio telaRemedio = new TelaRemedio();
-        Repositorio repositorio = new Repositorio();
-        TelaFuncionario Telafuncionario = new TelaFuncionario();
-        
-        public Remedio PegarValorRemedio()
-        {
-            telaRemedio.MostrarRemedios(true);
-            int id = PegarInformacao("Qual o id do medicamento deseja adquirir? ");
-            Remedio remedio = (Remedio)repositorio.SelecionarPorId(id);
+        private RepositorioAquisicao repositorioAquisicao;
 
-            return remedio;
+        private RepositorioFuncionario repositorioFuncionario;
+        private RepositorioRemedio repositorioRemedio;
+
+        private TelaFuncionario telaFuncionario;
+        private TelaRemedio telaRemedio;
+
+        public TelaAquisicao(RepositorioAquisicao repositorioAquisicao, RepositorioFuncionario repositorioFuncionarios,
+            RepositorioRemedio repositorioRemedio, TelaFuncionario telaFuncionario, TelaRemedio telaRemedio)
+        {
+            this.repositorioBase = repositorioAquisicao;
+            
+            this.repositorioAquisicao = repositorioAquisicao;
+            this.repositorioFuncionario = repositorioFuncionarios;
+            this.repositorioRemedio = repositorioRemedio;
+            this.telaFuncionario = telaFuncionario;
+            this.telaRemedio = telaRemedio;
+
+            nomeEntidade = "Aquisição";
         }
 
-        public Funcionario PegarValorFuncionario()
+        protected override void MostrarTabela(ArrayList registros)
         {
-            Telafuncionario.VisualizarFuncionarios(true);
-            int id = PegarInformacao("Qual o id do funcionario fazendo a Aquisicao?");
-            Funcionario funcionario = (Funcionario)repositorio.SelecionarPorId(id);
+            throw new NotImplementedException();
+        }
+
+        protected override EntidadeBase ObterRegistro()
+        {
+            Remedio remedio = ObterMedicamento();
+
+            Funcionario funcionario = ObterFuncionario();
+
+            Console.Write("Digite a quantidade de caixas: ");
+            int quantidade = Convert.ToInt32(Console.ReadLine());
+
+            Console.Write("Digite a data: ");
+            DateTime data = Convert.ToDateTime(Console.ReadLine());
+
+            return new Aquisicao(remedio, quantidade, data, funcionario);
+        }
+
+        private Funcionario ObterFuncionario()
+        {          
+            telaFuncionario.VisualizarRegistros(false);
+           
+            Console.Write("\nDigite o id do Funcionário: ");
+            int idFuncionario = Convert.ToInt32(Console.ReadLine());
+          
+            Funcionario funcionario = (Funcionario)repositorioFuncionario.SelecionarPorId(idFuncionario);
+
+            Console.WriteLine();
 
             return funcionario;
         }
 
+        private Remedio ObterMedicamento()
+        {          
+            telaRemedio.VisualizarRegistros(false);
 
+            Console.Write("\nDigite o id do Medicamento: ");
+            int idMedicamento = Convert.ToInt32(Console.ReadLine());
 
+            Remedio remedio = repositorioRemedio.SelecionarPorId(idMedicamento);
 
+            Console.WriteLine();
 
-
-
-
-
-
+            return remedio;
+        }
     }
 }
